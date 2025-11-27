@@ -1,11 +1,24 @@
 import "./Table.css";
+import { useNavigate } from 'react-router-dom';
 
-export function Table({ students, error }) {
+export function Table({ students, error, currentUser }) {
+  const navigate = useNavigate();
+
+  const handleNameClick = (login) => {
+    navigate(`/profile/${login}`);
+  };
+
+  if (error) {
+    return (
+      <div className="app-container">
+        <div className="error">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <title>Лидерборд</title>
-
-      {error && <p className="error">{error}</p>}
 
       <table className="film-table">
         <thead>
@@ -19,23 +32,34 @@ export function Table({ students, error }) {
         </thead>
         <tbody>
           {students.length > 0 ? (
-            students.map((student) => {
+            students.map((student, index) => {
+              // Определяем классы для призовых мест
               let rowClass = "";
-              if (student.Место === 1) {
+              const place = student.Место || index + 1;
+              
+              if (place === 1) {
                 rowClass = "gold-row";
-              } else if (student.Место === 2) {
+              } else if (place === 2) {
                 rowClass = "silver-row";
-              } else if (student.Место === 3) {
+              } else if (place === 3) {
                 rowClass = "bronze-row";
               }
 
+              // Добавляем класс для текущего пользователя
+              if (student.login === currentUser) {
+                rowClass += " current-user-row";
+              }
+
               return (
-                <tr key={student.Место} className={rowClass}>
-                  <td>{student.Место}</td>
+                <tr 
+                  key={student.login || student.Место || index} 
+                  className={rowClass.trim()}
+                >
+                  <td>{place}</td>
                   <td>{student.ФИО}</td>
                   <td>{student.Школа}</td>
                   <td>{student.Группа}</td>
-                  <td>{student["Счет баллов"]}</td>
+                  <td>{student["Счет_баллов"] || student.Баллы}</td>
                 </tr>
               );
             })

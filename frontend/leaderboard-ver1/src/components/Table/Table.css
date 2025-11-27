@@ -1,11 +1,12 @@
 .app-container {
-  min-height: 100vh;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* по вертикали */
-  align-items: center;     /* по горизонтали */
+  align-items: center; 
   background-color: white;
   text-align: center;
+  flex-grow: 1;
+  justify-content: flex-start; 
 }
 
 .app-title {
@@ -58,6 +59,7 @@
   transition: background-color 0.2s ease;
 }
 
+/* Призовые места */
 .gold-row {
   background: linear-gradient(135deg, #fff9c4, #ffd600) !important;
   color: #000 !important;
@@ -79,10 +81,58 @@
   box-shadow: inset 0 0 0 1px rgba(205, 127, 50, 0.4);
 }
 
+/* Чередование строк */
 .film-table tr:nth-child(even):not(.gold-row):not(.silver-row):not(.bronze-row) {
   background-color: #f9f9f9;
 }
 
 .film-table tr:hover:not(.gold-row):not(.silver-row):not(.bronze-row) {
   background-color: #e8f5e9;
+}
+
+/* Стиль для текущего пользователя */
+.current-user-row {
+  background: linear-gradient(135deg, #e8f5e8, #c8e6c9) !important;
+  border-left: 4px solid #4caf50 !important;
+  font-weight: bold;
+  position: relative;
+}
+
+.current-user-row:hover {
+  background: linear-gradient(135deg, #d4edda, #b9dfbb) !important;
+}
+
+/* Комбинированные стили (если пользователь в топ-3) */
+.gold-row.current-user-row {
+  background: linear-gradient(135deg, #fff9c4, #e8f5e8) !important;
+  border-left: 4px double #4caf50 !important;
+}
+
+.silver-row.current-user-row {
+  background: linear-gradient(135deg, #f5f5f5, #e8f5e8) !important;
+  border-left: 4px double #4caf50 !important;
+}
+
+.bronze-row.current-user-row {
+  background: linear-gradient(135deg, #ffe0b2, #e8f5e8) !important;
+  border-left: 4px double #4caf50 !important;
+}
+
+/* Сообщения об ошибках и загрузке */
+.error {
+  color: #d32f2f;
+  text-align: center;
+  padding: 20px;
+  background: #ffebee;
+  border-radius: 5px;
+  margin: 20px;
+  border: 1px solid #f5c6cb;
+  font-weight: bold;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
 }
