@@ -6,6 +6,7 @@ class StudentResponse(BaseModel):
     Школа: str
     Группа: str
     Счет_баллов: float
+    login: str = None
 
     class Config:
         from_attributes = True

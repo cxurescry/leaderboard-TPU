@@ -1,3 +1,73 @@
+/* Новые стили для фильтров */
+.filters-wrapper-new {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-select-new {
+  padding: 10px 14px;
+  border: 1px solid #a5d6a7;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 200px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%232e7d32'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 36px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-family: "Sirius";
+}
+
+.filter-select-new:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+}
+
+.apply-button {
+  padding: 10px 20px;
+  background-color: #1a6b2d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-family: "Sirius-Bold";
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.apply-button:hover {
+  background-color: #145021;
+  transform: translateY(-1px);
+}
+
+.apply-button:active {
+  transform: translateY(0);
+}
+
+.apply-icon {
+  font-size: 1em;
+}
+
 /* Основной wrapper — обертка для всего */
 .filters-wrapper {
   display: flex;

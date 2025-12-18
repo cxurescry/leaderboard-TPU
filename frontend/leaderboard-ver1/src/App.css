@@ -2,7 +2,56 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f3f5f6;
+}
+
+/* Основной контент в двух колонках */
+.main-content {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  align-items: flex-start;
+}
+
+/* Левая панель - основное содержимое */
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-title {
+  font-family: "Sirius-Bold";
+  font-size: 1.8em;
+  color: #1a6b2d;
+  margin: 0;
+}
+
+/* Правая панель - сайдбар */
+.main-content .sidebar {
+  flex-shrink: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* Стили для информации об авторизации */

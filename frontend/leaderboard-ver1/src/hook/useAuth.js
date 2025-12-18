@@ -1,4 +1,6 @@
+// useAuth.js
 import { useState, useEffect } from 'react';
+import api from '../services/api'; // Импортируем api.js
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -8,17 +10,10 @@ export const useAuth = () => {
   const loginWithData = async (userData) => {
     try {
       console.log('Logging in with data:', userData);
-      const response = await fetch('http://localhost:8000/auth/test-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(userData)
-      });
+      const response = await api.post('/auth/test-login', userData); // Используем api.js
 
-      if (response.ok) {
-        const userInfo = await response.json();
+      if (response.status === 200) {
+        const userInfo = response.data;
         setUser(userInfo);
         console.log('Login successful:', userInfo);
         return true;
@@ -36,10 +31,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       console.log('Logging out...');
-      await fetch('http://localhost:8000/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
+      await api.post('/auth/logout'); // Используем api.js
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -51,11 +43,9 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       console.log('Checking auth...');
-      const response = await fetch('http://localhost:8000/auth/me', {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const userData = await response.json();
+      const response = await api.get('/auth/me'); // Используем api.js
+      if (response.status === 200) {
+        const userData = response.data;
         setUser(userData);
         console.log('User is authenticated:', userData);
       } else {

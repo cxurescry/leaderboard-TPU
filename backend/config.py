@@ -1,3 +1,4 @@
+# config.py
 import os
 from dotenv import load_dotenv
 
@@ -11,12 +12,12 @@ class Settings:
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_PORT = os.getenv("DB_PORT")
     
-    # TPU OAuth Settings - ИСПРАВИМ НА ПРАВИЛЬНЫЕ URL
-    TPU_CLIENT_ID = os.getenv("TPU_CLIENT_ID", "your_client_id")  # Замените на реальный
-    TPU_CLIENT_SECRET = os.getenv("TPU_CLIENT_SECRET", "your_client_secret")  # Замените на реальный
-    TPU_API_KEY = os.getenv("TPU_API_KEY", "your_api_key")  # Замените на реальный
+    # TPU OAuth Settings
+    TPU_CLIENT_ID = os.getenv("TPU_CLIENT_ID", "your_client_id")
+    TPU_CLIENT_SECRET = os.getenv("TPU_CLIENT_SECRET", "your_client_secret")
+    TPU_API_KEY = os.getenv("TPU_API_KEY", "your_api_key")
     
-    # Правильные OAuth endpoints для ТПУ
+    # Правильные OAuth endpoints для ТПУ (без лишних пробелов)
     TPU_AUTH_URL = "https://oauth.tpu.ru/authorize"
     TPU_TOKEN_URL = "https://oauth.tpu.ru/access_token"
     TPU_USER_INFO_URL = "https://api.tpu.ru/v2/auth/user"

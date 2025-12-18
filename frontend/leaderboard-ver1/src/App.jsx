@@ -1,13 +1,18 @@
+// App.jsx
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header/Header';
 import { Filters } from './components/Filters/Filters';
 import { Table } from './components/Table/Table';
+import { Sidebar } from './components/Sidebar/Sidebar';
 import { AuthModal } from './components/AuthModal/AuthModal';
-import axios from 'axios';
+import axios from 'axios'; // Импортируем, но не устанавливаем глобально
 import { useAuth } from './hook/useAuth';
+import api from './services/api';
 import './App.css';
 
 const API_BASE_URL = 'http://localhost:8000';
+
+// axios.defaults.withCredentials = true; // Убрано: используем api.js с withCredentials
 
 export default function App() {
   const [students, setStudents] = useState([]);
@@ -26,6 +31,11 @@ export default function App() {
   const [schools, setSchools] = useState([]);
   const [groups, setGroups] = useState([]);
 
+  // Данные для сайдбара
+  const [userRank, setUserRank] = useState(null);
+  const [topWeekly, setTopWeekly] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+
   // Используем хук авторизации
   const { user, loading: authLoading, loginWithData, logout, checkAuth } = useAuth();
 
@@ -39,6 +49,8 @@ export default function App() {
       setIsAuthModalOpen(false);
       // Обновляем данные после авторизации
       checkAuth();
+      // Загружаем данные для сайдбара
+      fetchSidebarData();
     }
   };
 
@@ -82,6 +94,49 @@ export default function App() {
     }
   };
 
+  // Загрузка данных для сайдбара
+  const fetchSidebarData = async () => {
+    try {
+      // Загружаем место пользователя
+      try {
+        const rankResponse = await api.get('/api/user/rank');
+        if (rankResponse.data) {
+          setUserRank(rankResponse.data);
+        } else {
+          setUserRank(null);
+        }
+      } catch (err) {
+        // Если пользователь не авторизован или не найден - это нормально
+        if (err.response?.status !== 401) {
+          console.error('Ошибка загрузки места пользователя:', err);
+        }
+        setUserRank(null);
+      }
+
+      // Загружаем топ-3 за неделю
+      try {
+        const weeklyResponse = await api.get('/api/top-weekly');
+        setTopWeekly(weeklyResponse.data || []);
+      } catch (err) {
+        console.error('Ошибка загрузки топа недели:', err);
+        setTopWeekly([]);
+      }
+
+      // Загружаем достижения (доступны даже для неавторизованных)
+      try {
+        const achievementsResponse = await axios.get(`${API_BASE_URL}/api/achievements`, {
+          withCredentials: true
+        });
+        setAchievements(achievementsResponse.data || []);
+      } catch (err) {
+        console.error('Ошибка загрузки достижений:', err);
+        setAchievements([]);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки данных сайдбара:', err);
+    }
+  };
+
   // Находим текущего пользователя в таблице
   const findCurrentUserInLeaderboard = () => {
     if (!user || students.length === 0) return null;
@@ -115,13 +170,24 @@ export default function App() {
   const handleRefresh = () => {
     fetchStudents();
     fetchFilters();
+    fetchSidebarData();
   };
 
   // Эффект для начальной загрузки
   useEffect(() => {
     fetchStudents();
     fetchFilters();
+    fetchSidebarData();
   }, []);
+
+  // Эффект для загрузки данных сайдбара при изменении пользователя
+  useEffect(() => {
+    if (user) {
+      fetchSidebarData();
+    } else {
+      setUserRank(null);
+    }
+  }, [user]);
 
   // Эффект для фильтрации и сортировки
   useEffect(() => {
@@ -170,92 +236,57 @@ export default function App() {
         onClose={() => setIsAuthModalOpen(false)}
         onLogin={handleAuthSubmit}
       />
-      
-      {/* Информация о авторизации */}
-      {user && (
-        <div className="auth-info">
-          <div className="auth-content">
-            <span className="auth-icon">🧪</span>
-            <div className="auth-text">
-              <strong>Тестовый режим</strong>
-              <br />
-              Вы вошли как: <strong>{user.first_name} {user.last_name}</strong>
-              <br />
-              <small>{user.email}</small>
-              {currentUser && (
-                <div className="user-position">
-                  Логин в системе: <code>{currentUser}</code>
-                </div>
-              )}
+
+      {/* Основной контент в двух колонках */}
+      <div className="main-content">
+        {/* Левая панель - фильтры и таблица */}
+        <div className="main-panel">
+          <h1 className="main-title">Общий рейтинг</h1>
+          
+          {/* Индикатор загрузки при обновлении данных */}
+          {loading && students.length > 0 && (
+            <div className="loading-overlay">
+              <div className="spinner-small"></div>
+              <span>Обновление данных...</span>
             </div>
-            <button onClick={handleRefresh} className="refresh-btn" title="Обновить данные">
-              🔄
-            </button>
-          </div>
-          <div className="test-notice">
-            Для реальной авторизации получите ключи на 
-            <a href="https://api.tpu.ru/dashboard" target="_blank" rel="noopener noreferrer">
-              api.tpu.ru
-            </a>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Подсказка для неавторизованных */}
-      {!user && (
-        <div className="auth-hint">
-          <p>🎯 <strong>Тестовая авторизация</strong> - нажмите "Войти" для демонстрации</p>
-          <p><small>Для реальной авторизации ТПУ потребуются ключи с api.tpu.ru</small></p>
-          <button onClick={handleRefresh} className="refresh-btn-large">
-            🔄 Обновить данные
-          </button>
+          <Filters
+            search={search}
+            onSearchChange={setSearch}
+            schoolFilter={schoolFilter}
+            onSchoolFilterChange={setSchoolFilter}
+            groupFilter={groupFilter}
+            onGroupFilterChange={setGroupFilter}
+            minScore={minScore}
+            onMinScoreChange={setMinScore}
+            maxScore={maxScore}
+            onMaxScoreChange={setMaxScore}
+            schools={schools}
+            groups={groups}
+            onReset={onReset}
+            visibleCount={students.length}
+            loading={loading}
+            onApply={() => fetchStudents()}
+          />
+          
+          <Table 
+            students={students} 
+            error={error} 
+            currentUser={currentUser} 
+            loading={loading}
+          />
         </div>
-      )}
 
-      {/* Индикатор загрузки при обновлении данных */}
-      {loading && students.length > 0 && (
-        <div className="loading-overlay">
-          <div className="spinner-small"></div>
-          <span>Обновление данных...</span>
-        </div>
-      )}
-
-      <Filters
-        search={search}
-        onSearchChange={setSearch}
-        schoolFilter={schoolFilter}
-        onSchoolFilterChange={setSchoolFilter}
-        groupFilter={groupFilter}
-        onGroupFilterChange={setGroupFilter}
-        minScore={minScore}
-        onMinScoreChange={setMinScore}
-        maxScore={maxScore}
-        onMaxScoreChange={setMaxScore}
-        schools={schools}
-        groups={groups}
-        onReset={onReset}
-        visibleCount={students.length}
-        loading={loading}
-      />
-      
-      <Table 
-        students={students} 
-        error={error} 
-        currentUser={currentUser} 
-        loading={loading}
-      />
-
-      {/* Статистика в футере */}
-      <footer className="app-footer">
-        <div className="footer-stats">
-          <span>Всего студентов: <strong>{students.length}</strong></span>
-          {currentUser && <span>• Ваше место будет выделено зеленым</span>}
-          {user && <span>• Авторизованы через тестовый режим</span>}
-        </div>
-        <div className="footer-info">
-          Лидерборд Томский политехнический университет © 2024
-        </div>
-      </footer>
+        
+        {/* Правая панель - сайдбар */}
+        <Sidebar 
+          user={user}
+          userRank={userRank}
+          topWeekly={topWeekly}
+          achievements={achievements}
+        />
+      </div>
     </div>
   );
 }

@@ -2,11 +2,8 @@
   min-height: 600px;
   display: flex;
   flex-direction: column;
-  align-items: center; 
   background-color: white;
-  text-align: center;
   flex-grow: 1;
-  justify-content: flex-start; 
 }
 
 .app-title {
@@ -19,9 +16,7 @@
 /* Таблица */
 .film-table {
   border-collapse: collapse;
-  width: 80%;
-  max-width: 900px;
-  margin: 0 auto; 
+  width: 100%;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 12px;

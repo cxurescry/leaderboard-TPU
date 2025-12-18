@@ -50,13 +50,27 @@ export function Table({ students, error, currentUser }) {
                 rowClass += " current-user-row";
               }
 
+              const studentLogin = student.login || student.Место || `student-${index}`;
+              
               return (
                 <tr 
-                  key={student.login || student.Место || index} 
+                  key={studentLogin} 
                   className={rowClass.trim()}
                 >
                   <td>{place}</td>
-                  <td>{student.ФИО}</td>
+                  <td>
+                    {studentLogin ? (
+                      <span 
+                        className="student-name-link"
+                        onClick={() => handleNameClick(studentLogin)}
+                        style={{ cursor: 'pointer', color: '#1a6b2d', textDecoration: 'underline' }}
+                      >
+                        {student.ФИО}
+                      </span>
+                    ) : (
+                      <span>{student.ФИО}</span>
+                    )}
+                  </td>
                   <td>{student.Школа}</td>
                   <td>{student.Группа}</td>
                   <td>{student["Счет_баллов"] || student.Баллы}</td>
