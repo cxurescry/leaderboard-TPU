@@ -1,5 +1,5 @@
 BACKEND      := backend
-FRONTEND     := frontend/leaderboard-ver1
+FRONTEND     := frontend
 
 VENV         := $(BACKEND)/venv
 REQUIREMENTS := $(BACKEND)/requirements.txt
@@ -16,7 +16,7 @@ NODE_SOURCE  := $(FRONTEND)/src
 all: setup $(STATIC)
 
 run: setup $(STATIC)
-	$(VENV)/bin/uvicorn main:app --reload --host 0.0.0.0 --port 8000 --app-dir $(BACKEND)
+	$(VENV)/bin/uvicorn main:app --reload --app-dir $(BACKEND)
 
 setup: $(VENV) $(NODE_MODULES)
 
@@ -41,3 +41,4 @@ clean:
 	rm -rf $(NODE_MODULES)
 	rm -rf $(NODE_DIST)
 	rm -rf $(BACKEND)/__pycache__
+	rm -rf $(BACKEND)/routes/__pycache__

@@ -34,9 +34,9 @@ class User(Base):
     
     def to_dict(self):
         return {
-            "id": self.id,
+            "id":          self.id,
             "tpu_user_id": self.tpu_user_id,
-            "email": self.email,
-            "first_name": self.first_name,
-            "last_name": self.last_name
+            "email":       self.email,
+            "first_name":  self.first_name,
+            "last_name":   self.last_name
         }

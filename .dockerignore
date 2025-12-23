@@ -1,5 +1,7 @@
 .git
 .gitignore
+.dockerignore
+.idea
 README.md
 Dockerfile
 .dockerignore
@@ -9,3 +11,6 @@ __pycache__
 .coverage
 .pytest_cache
 .nyc_output
+venv
+static
+dist

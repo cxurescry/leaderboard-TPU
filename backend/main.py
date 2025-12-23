@@ -15,11 +15,6 @@ import os
 # Убедитесь, что путь соответствует местоположению папки dist после сборки npm run build
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
-# FRONTEND_BUILD_DIR = 
-
-# if not os.path.exists(FRONTEND_BUILD_DIR):
-#     print(f"ВНИМАНИЕ: Папка с фронтенд-билдом не найдена: {FRONTEND_BUILD_DIR}")
-#     print("Убедитесь, что вы выполнили 'npm run build' в папке фронтенда и путь указан правильно.")
 
 app = FastAPI()
 
