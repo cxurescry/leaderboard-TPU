@@ -5,7 +5,8 @@ import { Filters } from './components/Filters/Filters';
 import { Table } from './components/Table/Table';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { AuthModal } from './components/AuthModal/AuthModal';
-import axios from 'axios'; // Импортируем, но не устанавливаем глобально
+import { RatingSwitcher } from './components/RatingSwitcher/RatingSwitcher';
+import axios from 'axios'; 
 import { useAuth } from './hook/useAuth';
 import api from './services/api';
 import './App.css';
@@ -36,6 +37,10 @@ export default function App() {
   const [topWeekly, setTopWeekly] = useState([]);
   const [achievements, setAchievements] = useState([]);
 
+  const [ratingMode, setRatingMode] = useState('individual');
+  const [teams, setTeams] = useState([]);
+  const [mentors, setMentors] = useState([]);
+
   // Используем хук авторизации
   const { user, loading: authLoading, loginWithData, logout, checkAuth } = useAuth();
 
@@ -53,6 +58,23 @@ export default function App() {
       fetchSidebarData();
     }
   };
+
+  const fetchTeams = async () => {
+  const res = await fetch('/data/teams.json');
+  setTeams(await res.json());
+};
+
+  const fetchMentors = async () => {
+    const res = await fetch('/data/mentors.json');
+    setMentors(await res.json());
+  };
+
+  useEffect(() => {
+    if (ratingMode === 'team') fetchTeams();
+    if (ratingMode === 'mentor') fetchMentors();
+  }, [ratingMode]);
+
+
 
   const fetchStudents = async () => {
     try {
@@ -251,6 +273,8 @@ export default function App() {
             </div>
           )}
 
+          <RatingSwitcher mode={ratingMode} onChange={setRatingMode} />
+
           <Filters
             search={search}
             onSearchChange={setSearch}
@@ -274,7 +298,9 @@ export default function App() {
             students={students} 
             error={error} 
             currentUser={currentUser} 
-            loading={loading}
+            mode={ratingMode}
+            teams={teams}
+            mentors={mentors}
           />
         </div>
 

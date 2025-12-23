@@ -1,10 +1,19 @@
+// Table.jsx
 import "./Table.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-export function Table({ students, error, currentUser }) {
+export function Table({
+  mode = "individual",   // 'individual' | 'team' | 'mentor'
+  students = [],
+  teams = [],
+  mentors = [],
+  error,
+  currentUser
+}) {
   const navigate = useNavigate();
 
   const handleNameClick = (login) => {
+    if (!login) return;
     navigate(`/profile/${login}`);
   };
 
@@ -16,71 +25,109 @@ export function Table({ students, error, currentUser }) {
     );
   }
 
+  const data =
+    mode === "individual"
+      ? students
+      : mode === "team"
+      ? teams
+      : mentors;
+
   return (
     <div className="app-container">
-      <title>Лидерборд</title>
-
       <table className="film-table">
         <thead>
           <tr>
             <th>Место</th>
-            <th>ФИО</th>
-            <th>Школа</th>
-            <th>Группа</th>
+
+            {mode === "individual" && (
+              <>
+                <th>ФИО</th>
+                <th>Школа</th>
+                <th>Группа</th>
+              </>
+            )}
+
+            {mode === "team" && <th>Команда</th>}
+            {mode === "mentor" && <th>Наставник</th>}
+
             <th>Баллы</th>
           </tr>
         </thead>
-        <tbody>
-          {students.length > 0 ? (
-            students.map((student, index) => {
-              // Определяем классы для призовых мест
-              let rowClass = "";
-              const place = student.Место || index + 1;
-              
-              if (place === 1) {
-                rowClass = "gold-row";
-              } else if (place === 2) {
-                rowClass = "silver-row";
-              } else if (place === 3) {
-                rowClass = "bronze-row";
-              }
 
-              // Добавляем класс для текущего пользователя
-              if (student.login === currentUser) {
+        <tbody>
+          {data.length > 0 ? (
+            data.map((item, index) => {
+              const place = item.Место || index + 1;
+
+              let rowClass = "";
+              if (place === 1) rowClass = "gold-row";
+              else if (place === 2) rowClass = "silver-row";
+              else if (place === 3) rowClass = "bronze-row";
+
+              if (
+                mode === "individual" &&
+                item.login &&
+                item.login === currentUser
+              ) {
                 rowClass += " current-user-row";
               }
 
-              const studentLogin = student.login || student.Место || `student-${index}`;
-              
+              /** ✅ КОРРЕКТНОЕ ОПРЕДЕЛЕНИЕ БАЛЛОВ */
+              let scoreValue = null;
+
+              if (mode === "individual") {
+                // ищем первое числовое поле (баллы всегда число)
+                scoreValue =
+                  Object.values(item).find(
+                    (v) => typeof v === "number" && !Number.isNaN(v)
+                  ) ?? "";
+              } else {
+                scoreValue = item.score ?? "";
+              }
+
+
               return (
-                <tr 
-                  key={studentLogin} 
-                  className={rowClass.trim()}
-                >
+                <tr key={item.id || item.login || index} className={rowClass.trim()}>
                   <td>{place}</td>
-                  <td>
-                    {studentLogin ? (
-                      <span 
-                        className="student-name-link"
-                        onClick={() => handleNameClick(studentLogin)}
-                        style={{ cursor: 'pointer', color: '#1a6b2d', textDecoration: 'underline' }}
-                      >
-                        {student.ФИО}
-                      </span>
-                    ) : (
-                      <span>{student.ФИО}</span>
-                    )}
-                  </td>
-                  <td>{student.Школа}</td>
-                  <td>{student.Группа}</td>
-                  <td>{student["Счет_баллов"] || student.Баллы}</td>
+
+                  {mode === "individual" && (
+                    <>
+                      <td>
+                        {item.login ? (
+                          <span
+                            className="student-name-link"
+                            onClick={() => handleNameClick(item.login)}
+                            style={{
+                              cursor: "pointer",
+                              color: "#1a6b2d",
+                              textDecoration: "underline"
+                            }}
+                          >
+                            {item.ФИО}
+                          </span>
+                        ) : (
+                          item.ФИО
+                        )}
+                      </td>
+                      <td>{item.Школа}</td>
+                      <td>{item.Группа}</td>
+                    </>
+                  )}
+
+                  {mode === "team" && <td>{item.name}</td>}
+                  {mode === "mentor" && <td>{item.fullName}</td>}
+
+                  <td>{scoreValue}</td>
                 </tr>
               );
             })
           ) : (
             <tr>
-              <td className="loading" colSpan="5">
-                Загрузка данных...
+              <td
+                colSpan={mode === "individual" ? 5 : 3}
+                className="loading"
+              >
+                Нет данных
               </td>
             </tr>
           )}
